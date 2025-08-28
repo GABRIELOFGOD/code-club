@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Appliance Controller - Wiring Diagram</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #333;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .diagram-section {
+        margin: 30px 0;
+        padding: 25px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border-left: 5px solid #3498db;
+      }
+
+      .component-box {
+        background: white;
+        border: 2px solid #34495e;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 15px;
+        display: inline-block;
+        min-width: 150px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      .component-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .arduino {
+        border-color: #e74c3c;
+        background: #ffebee;
+      }
+      .sensor {
+        border-color: #f39c12;
+        background: #fff8e1;
+      }
+      .actuator {
+        border-color: #27ae60;
+        background: #e8f5e8;
+      }
+      .power {
+        border-color: #8e44ad;
+        background: #f3e5f5;
+      }
+      .relay {
+        border-color: #e67e22;
+        background: #fdf2e9;
+      }
+
+      .connection-line {
+        border-top: 3px solid #3498db;
+        margin: 10px 20px;
+        position: relative;
+      }
+
+      .connection-line::before {
+        content: "";
+        position: absolute;
+        right: -10px;
+        top: -6px;
+        width: 0;
+        height: 0;
+        border-left: 10px solid #3498db;
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+      }
+
+      .power-warning {
+        background: #fff3cd;
+        border: 2px solid #ffc107;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 20px 0;
+        color: #856404;
+      }
+
+      .safety-note {
+        background: #f8d7da;
+        border: 2px solid #dc3545;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 20px 0;
+        color: #721c24;
+      }
+
+      .pin-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .pin-table th,
+      .pin-table td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+      }
+
+      .pin-table th {
+        background: #34495e;
+        color: white;
+        font-weight: bold;
+      }
+
+      .pin-table tr:nth-child(even) {
+        background: #f2f2f2;
+      }
+
+      .wire-color {
+        padding: 3px 8px;
+        border-radius: 12px;
+        color: white;
+        font-weight: bold;
+        font-size: 0.9em;
+      }
+
+      .red {
+        background: #e74c3c;
+      }
+      .black {
+        background: #2c3e50;
+      }
+      .yellow {
+        background: #f1c40f;
+        color: #2c3e50;
+      }
+      .blue {
+        background: #3498db;
+      }
+      .green {
+        background: #27ae60;
+      }
+      .orange {
+        background: #e67e22;
+      }
+
+      .schematic {
+        background: white;
+        border: 2px solid #bdc3c7;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        font-family: monospace;
+        font-size: 14px;
+        line-height: 1.6;
+        overflow-x: auto;
+      }
+
+      .tabs {
+        display: flex;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #ecf0f1;
+      }
+
+      .tab {
+        padding: 12px 24px;
+        background: #ecf0f1;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        border-radius: 8px 8px 0 0;
+        margin-right: 5px;
+      }
+
+      .tab.active {
+        background: #3498db;
+        color: white;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🏠 Smart Appliance Controller - Wiring Guide</h1>
+
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('overview')">
+          Overview
+        </button>
+        <button class="tab" onclick="showTab('detailed')">
+          Detailed Connections
+        </button>
+        <button class="tab" onclick="showTab('power')">Power Setup</button>
+        <button class="tab" onclick="showTab('safety')">Safety & Tips</button>
+      </div>
+
+      <div id="overview" class="tab-content active">
+        <div class="diagram-section">
+          <h2>🔌 System Overview</h2>
+
+          <div style="text-align: center; margin: 30px 0">
+            <div class="component-box arduino">
+              <strong>Arduino Uno</strong><br />
+              Main Controller<br />
+              <small>5V/3.3V Logic</small>
+            </div>
+
+            <div class="connection-line"></div>
+
+            <div class="component-box sensor">
+              <strong>IR Receiver</strong><br />
+              Pin 2<br />
+              <small>Remote Control</small>
+            </div>
+
+            <div class="component-box sensor">
+              <strong>LCD Display</strong><br />
+              I2C (A4, A5)<br />
+              <small>Menu System</small>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin: 30px 0">
+            <div class="component-box actuator">
+              <strong>Servo Motor</strong><br />
+              Pin 9<br />
+              <small>Window Control</small>
+            </div>
+
+            <div class="component-box actuator">
+              <strong>DC Motor/Fan</strong><br />
+              Pin 3 (PWM)<br />
+              <small>Via Transistor</small>
+            </div>
+
+            <div class="component-box actuator">
+              <strong>LED Strip</strong><br />
+              Pin 5 (PWM)<br />
+              <small>Brightness Control</small>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin: 30px 0">
+            <div class="component-box relay">
+              <strong>Relay Module</strong><br />
+              Pin 7<br />
+              <small>AC Appliance Control</small>
+            </div>
+
+            <div class="component-box power">
+              <strong>Buzzer</strong><br />
+              Pin 8<br />
+              <small>Audio Alerts</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="detailed" class="tab-content">
+        <div class="diagram-section">
+          <h2>📋 Pin Connection Table</h2>
+
+          <table class="pin-table">
+            <tr>
+              <th>Component</th>
+              <th>Arduino Pin</th>
+              <th>Wire Color</th>
+              <th>Component Pin</th>
+              <th>Notes</th>
+            </tr>
+            <tr>
+              <td><strong>LCD Display (I2C)</strong></td>
+              <td>A4 (SDA)</td>
+              <td><span class="wire-color blue">Blue</span></td>
+              <td>SDA</td>
+              <td>Data line</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>A5 (SCL)</td>
+              <td><span class="wire-color yellow">Yellow</span></td>
+              <td>SCL</td>
+              <td>Clock line</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>5V</td>
+              <td><span class="wire-color red">Red</span></td>
+              <td>VCC</td>
+              <td>Power +</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>GND</td>
+              <td><span class="wire-color black">Black</span></td>
+              <td>GND</td>
+              <td>Ground</td>
+            </tr>
+            <tr>
+              <td><strong>IR Receiver</strong></td>
+              <td>Pin 2</td>
+              <td><span class="wire-color orange">Orange</span></td>
+              <td>OUT/Signal</td>
+              <td>Data pin</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>5V</td>
+              <td><span class="wire-color red">Red</span></td>
+              <td>VCC</td>
+              <td>Power +</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>GND</td>
+              <td><span class="wire-color black">Black</span></td>
+              <td>GND</td>
+              <td>Ground</td>
+            </tr>
+            <tr>
+              <td><strong>Servo Motor</strong></td>
+              <td>Pin 9</td>
+              <td><span class="wire-color orange">Orange</span></td>
+              <td>Signal</td>
+              <td>PWM control</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>5V</td>
+              <td><span class="wire-color red">Red</span></td>
+              <td>VCC</td>
+              <td>Power +</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>GND</td>
+              <td><span class="wire-color black">Black</span></td>
+              <td>GND</td>
+              <td>Ground</td>
+            </tr>
+            <tr>
+              <td><strong>DC Motor (via Transistor)</strong></td>
+              <td>Pin 3</td>
+              <td><span class="wire-color blue">Blue</span></td>
+              <td>Base (through 1kΩ resistor)</td>
+              <td>PWM speed control</td>
+            </tr>
+            <tr>
+              <td><strong>Relay Module</strong></td>
+              <td>Pin 7</td>
+              <td><span class="wire-color green">Green</span></td>
+              <td>IN</td>
+              <td>Control signal</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>5V</td>
+              <td><span class="wire-color red">Red</span></td>
+              <td>VCC</td>
+              <td>Power +</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>GND</td>
+              <td><span class="wire-color black">Black</span></td>
+              <td>GND</td>
+              <td>Ground</td>
+            </tr>
+            <tr>
+              <td><strong>LED Strip</strong></td>
+              <td>Pin 5</td>
+              <td><span class="wire-color yellow">Yellow</span></td>
+              <td>+ (through 220Ω resistor)</td>
+              <td>Brightness control</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>GND</td>
+              <td><span class="wire-color black">Black</span></td>
+              <td>-</td>
+              <td>Ground</td>
+            </tr>
+            <tr>
+              <td><strong>Buzzer</strong></td>
+              <td>Pin 8</td>
+              <td><span class="wire-color red">Red</span></td>
+              <td>+</td>
+              <td>Positive</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>GND</td>
+              <td><span class="wire-color black">Black</span></td>
+              <td>-</td>
+              <td>Ground</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="diagram-section">
+          <h2>🔧 Motor Control Circuit</h2>
+
+          <div class="schematic">
+            Arduino Pin 3 ----[1kΩ Resistor]---- Base of NPN Transistor (2N2222)
+            | Collector | External 6-12V ----[DC Motor]-------- | Ground ----
+            Emitter of Transistor | Arduino GND
+
+            <strong>Components needed:</strong>
+            • NPN Transistor (2N2222 or similar) • 1kΩ Resistor • Flyback Diode
+            (1N4007) across motor terminals
+          </div>
+        </div>
+      </div>
+
+      <div id="power" class="tab-content">
+        <div class="diagram-section">
+          <h2>⚡ Power Supply Setup</h2>
+
+          <div class="power-warning">
+            <h3>⚠️ Important: Multiple Power Sources Needed</h3>
+            <p>
+              You cannot power everything from Arduino's 5V pin or a single
+              battery. Here's why:
+            </p>
+            <ul>
+              <li>
+                <strong>Arduino 5V pin:</strong> Maximum 500mA (not enough for
+                motors)
+              </li>
+              <li><strong>Motors:</strong> Can draw 1-3A each</li>
+              <li><strong>Servo:</strong> Can draw up to 1A under load</li>
+            </ul>
+          </div>
+
+          <h3>🔋 Recommended Power Setup:</h3>
+
+          <div
+            class="component-box power"
+            style="width: 80%; margin: 20px auto"
+          >
+            <h4>Power Source 1: Arduino + Electronics</h4>
+            <p>
+              <strong>USB Power Bank (5V, 2A)</strong> or
+              <strong>9V Wall Adapter</strong>
+            </p>
+            <p>Powers: Arduino, LCD, IR Receiver, Buzzer, small LEDs</p>
+          </div>
+
+          <div
+            class="component-box power"
+            style="width: 80%; margin: 20px auto"
+          >
+            <h4>Power Source 2: Motors & High-Power Components</h4>
+            <p><strong>6-12V DC Power Supply (2-3A)</strong></p>
+            <p>Powers: DC Motor/Fan, Servo Motor, LED Strips</p>
+          </div>
+
+          <div
+            class="component-box relay"
+            style="width: 80%; margin: 20px auto"
+          >
+            <h4>Power Source 3: AC Appliances (Optional)</h4>
+            <p><strong>Mains Power (110V/220V)</strong> through Relay</p>
+            <p>Controls: Lamps, Fans, Heaters (AC powered devices)</p>
+          </div>
+
+          <div class="schematic">
+            <strong>Power Distribution:</strong>
+
+            USB/9V Adapter → Arduino Uno → 5V Rail → LCD, IR, Buzzer ↓ GND
+            Common ←→ All Components Share Ground ↑ 6-12V Supply → Motor Driver
+            → DC Motor → Servo Motor (with capacitor for stability) → LED Strips
+            (with appropriate resistors) Relay Module: Arduino Pin 7 → Relay
+            Coil (5V from Arduino) AC Mains → Relay Contacts → AC Appliance
+          </div>
+        </div>
+      </div>
+
+      <div id="safety" class="tab-content">
+        <div class="safety-note">
+          <h3>🚨 SAFETY WARNINGS</h3>
+          <ul>
+            <li>
+              <strong>AC Mains:</strong> NEVER work with AC power without proper
+              knowledge. Get help from an electrician!
+            </li>
+            <li>
+              <strong>Relay Isolation:</strong> Always use proper enclosures for
+              AC connections
+            </li>
+            <li><strong>Fuses:</strong> Add fuses to all power circuits</li>
+            <li>
+              <strong>Ground Loop:</strong> Connect all grounds together, but
+              use separate power supplies
+            </li>
+          </ul>
+        </div>
+
+        <div class="diagram-section">
+          <h2>💡 Assembly Tips</h2>
+
+          <h3>1. Start Simple:</h3>
+          <ul>
+            <li>Begin with just Arduino + LCD + IR receiver</li>
+            <li>Test the menu system first</li>
+            <li>Add one component at a time</li>
+          </ul>
+
+          <h3>2. Motor Connection Options:</h3>
+          <h4>Option A: Simple On/Off (Easiest)</h4>
+          <div class="schematic">
+            DC Motor → Relay Contacts → External Power Supply Arduino Pin 7 →
+            Relay Control
+          </div>
+
+          <h4>Option B: Speed Control (Better)</h4>
+          <div class="schematic">
+            Arduino Pin 3 → [1kΩ] → Transistor Base External Power → DC Motor →
+            Transistor Collector Transistor Emitter → Ground
+          </div>
+
+          <h3>3. Testing Checklist:</h3>
+          <ul>
+            <li>✅ Power LED on Arduino lights up</li>
+            <li>✅ LCD displays welcome message</li>
+            <li>✅ IR receiver responds to remote</li>
+            <li>✅ Each component responds to menu commands</li>
+            <li>✅ No components get hot during operation</li>
+          </ul>
+
+          <h3>4. Troubleshooting:</h3>
+          <ul>
+            <li>
+              <strong>LCD blank:</strong> Check I2C address (try 0x3F instead of
+              0x27)
+            </li>
+            <li>
+              <strong>IR not working:</strong> Verify button codes with scanner
+              function
+            </li>
+            <li>
+              <strong>Motor not spinning:</strong> Check power supply and
+              transistor connections
+            </li>
+            <li>
+              <strong>System resets:</strong> Insufficient power - use external
+              supply for motors
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showTab(tabName) {
+        // Hide all tab contents
+        const contents = document.querySelectorAll(".tab-content");
+        contents.forEach((content) => content.classList.remove("active"));
+
+        // Remove active class from all tabs
+        const tabs = document.querySelectorAll(".tab");
+        tabs.forEach((tab) => tab.classList.remove("active"));
+
+        // Show selected tab content
+        document.getElementById(tabName).classList.add("active");
+
+        // Add active class to clicked tab
+        event.target.classList.add("active");
+      }
+    </script>
+  </body>
+</html>
