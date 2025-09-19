@@ -2,6 +2,10 @@
 
 // ---------------- Pin definitions ----------------
 const uint8_t RECV_PIN = 11;   // IR receiver pin
+
+const uint8_t ENA = 8;   // Enable pin for Motor A
+const uint8_t ENB = 3;   // Enable pin for Motor B (use PWM pin for speed control)
+
 const uint8_t IN1 = 7;
 const uint8_t IN2 = 6;
 const uint8_t IN3 = 5;
@@ -32,6 +36,12 @@ bool autoMode = false; // false = manual, true = autonomous
 void setup() {
   Serial.begin(9600);
   IrReceiver.begin(RECV_PIN, ENABLE_LED_FEEDBACK);
+
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);
+  digitalWrite(ENA, HIGH); // enable motor A
+  digitalWrite(ENB, HIGH); // enable motor B
+  // (use analogWrite if you want speed control)
 
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
