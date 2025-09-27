@@ -40,37 +40,40 @@ void setup()
   rotateMotor(0,0);   
 }
 
-
 void loop()
 {
   int distance = mySensor.ping_cm();
   int rightIRSensorValue = digitalRead(IR_SENSOR_RIGHT);
   int leftIRSensorValue = digitalRead(IR_SENSOR_LEFT);
 
-  //NOTE: If IR sensor detects the hand then its value will be LOW else the value will be HIGH
-  
-  //If right sensor detects hand, then turn right. We increase left motor speed and decrease the right motor speed to turn towards right
-  if (rightIRSensorValue == LOW && leftIRSensorValue == HIGH )
-  {
-      rotateMotor(MAX_FORWARD_MOTOR_SPEED - MAX_MOTOR_TURN_SPEED_ADJUSTMENT, MAX_FORWARD_MOTOR_SPEED + MAX_MOTOR_TURN_SPEED_ADJUSTMENT ); 
+  // --- COLLISION AVOIDANCE ---
+  if (distance > 0 && distance < MIN_DISTANCE) {
+    // Object too close -> STOP
+    rotateMotor(0, 0);
   }
-  //If left sensor detects hand, then turn left. We increase right motor speed and decrease the left motor speed to turn towards left
-  else if (rightIRSensorValue == HIGH && leftIRSensorValue == LOW )
-  {
-      rotateMotor(MAX_FORWARD_MOTOR_SPEED + MAX_MOTOR_TURN_SPEED_ADJUSTMENT, MAX_FORWARD_MOTOR_SPEED - MAX_MOTOR_TURN_SPEED_ADJUSTMENT); 
-  }
-  //If distance is between min and max then go straight
-  else if (distance >= MIN_DISTANCE && distance <= MAX_DISTANCE)
-  {
+  // --- BOTH IR sensors detect an object -> GO STRAIGHT ---
+  else if (rightIRSensorValue == LOW && leftIRSensorValue == LOW) {
     rotateMotor(MAX_FORWARD_MOTOR_SPEED, MAX_FORWARD_MOTOR_SPEED);
   }
-  //stop the motors
-  else 
-  {
+  // --- Right IR detects -> turn right ---
+  else if (rightIRSensorValue == LOW && leftIRSensorValue == HIGH) {
+    rotateMotor(MAX_FORWARD_MOTOR_SPEED - MAX_MOTOR_TURN_SPEED_ADJUSTMENT, 
+                MAX_FORWARD_MOTOR_SPEED + MAX_MOTOR_TURN_SPEED_ADJUSTMENT); 
+  }
+  // --- Left IR detects -> turn left ---
+  else if (rightIRSensorValue == HIGH && leftIRSensorValue == LOW) {
+    rotateMotor(MAX_FORWARD_MOTOR_SPEED + MAX_MOTOR_TURN_SPEED_ADJUSTMENT, 
+                MAX_FORWARD_MOTOR_SPEED - MAX_MOTOR_TURN_SPEED_ADJUSTMENT); 
+  }
+  // --- If no IR detection, but safe distance -> move forward ---
+  else if (distance >= MIN_DISTANCE && distance <= MAX_DISTANCE) {
+    rotateMotor(MAX_FORWARD_MOTOR_SPEED, MAX_FORWARD_MOTOR_SPEED);
+  }
+  // --- Default: STOP ---
+  else {
     rotateMotor(0, 0);
   }
 }
-
 
 void rotateMotor(int rightMotorSpeed, int leftMotorSpeed)
 {
